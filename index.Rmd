@@ -1,6 +1,6 @@
 --- 
-title: "YOUR TITLE HERE"
-author: "YOUR NAMES HERE"
+title: "NYC-Crime-Health-Accident"
+author: "Zhining Qiu & Yunzhe Zhang"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
