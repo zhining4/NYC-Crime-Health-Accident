@@ -24,7 +24,7 @@
 <meta name="author" content="Zhining Qiu &amp; Yunzhe Zhang" />
 
 
-<meta name="date" content="2021-11-18" />
+<meta name="date" content="2021-11-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -76,7 +76,10 @@
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources</a></li>
 <li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a></li>
-<li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a></li>
+<li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#motorcycle-accident-missing-pattern"><i class="fa fa-check"></i><b>4.1</b> Motorcycle Accident Missing Pattern</a></li>
+</ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a></li>
 <li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
@@ -101,7 +104,54 @@
             <section class="normal" id="section-">
 <div id="missing-values" class="section level1" number="4">
 <h1><span class="header-section-number">Chapter 4</span> Missing values</h1>
+<div id="motorcycle-accident-missing-pattern" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Motorcycle Accident Missing Pattern</h2>
+<p>For this first draft, we will focus on the newest November motorcycle accident data to provide a clear missing pattern with explaination.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-31-1.png" width="1440" /></p>
+<p>We summarize this November-2021 data to provide a sufficient and recognizable missing pattern.</p>
+<p>For better understanding for the first draft, I will explain those variables there. In the complete version we will introduce variable explaination for all datasets in data source chapter.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Column Name</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>vehicle_type_code_#</td>
+<td>the type of vehicle based on the selected vehicle category (ATV, bicycle, car/suv, ebike, escooter, truck/bus, motorcycle, other)</td>
+</tr>
+<tr class="even">
+<td>contributing_factor_vehicle_#</td>
+<td>the factor contributing to the collision for designated vehicle</td>
+</tr>
+<tr class="odd">
+<td>on_street_name</td>
+<td>the street on which the collision occurred</td>
+</tr>
+<tr class="even">
+<td>cross_street_name</td>
+<td>Nearest cross street to the collision</td>
+</tr>
+<tr class="odd">
+<td>off_street_name</td>
+<td>Street address if known</td>
+</tr>
+</tbody>
+</table>
+<p>From row perspective, we could see the most representative missing pattern are accidents without having data in those columns: ‘vehicle_type_code_5’, ‘contributing_factor_vehicle_5’, ‘vehicle_type_code_4’, ‘contributing_factor_vehicle_4’, ‘vehicle_type_code_3’, ‘contributing_factor_vehicle_3’, ‘cross_street_name’.</p>
+<p>That high appearance with 7 missing columns meaning that most motorcycle collision has 2 vehicles and that type of collision are least likely appear at the the conjunction of two roads.
+Other missing pattern in frequency order also include collision without specific borough and zip code might be a minor accident.
+The third missing pattern are vehicle collision at the conjunction of two roads involving 2 vehicles.</p>
+<p>From column perspetive, we could see that most accidents do not have more than 2 vehicles. With on_street or off_street collision appear more often than cross_street collision.</p>
+<p>Column and row frequency shares similarity to provide the real accident phenomenon and tell us which type of accident appears more frequently. Missing pattern analysis provide sufficient details for what features most motorcycle collisions would have and what are other common features that motorcycle collisions shares sorting by pattern frequency.</p>
 
+</div>
 </div>
             </section>
 
