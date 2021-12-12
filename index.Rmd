@@ -1,5 +1,5 @@
 --- 
-title: "NYC-Crime-Health-Accident"
+title: "NYC-motor-accident"
 author: "Zhining Qiu & Yunzhe Zhang"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
