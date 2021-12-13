@@ -1,2 +1,21 @@
 # Conclusion
 
+## Valuable results
+There are several meaningful ideas we have analyzed through our data visualization.
+
+* The NYC motor collision is prevalent through all borough and there are regions like zipcode 10207 and 10002 that has comparatively higher motor collision rate than other places. People could pay more attention when walking or driving within those areas and in general people should be respectful to traffic rule and be careful for walking across street.
+
+* We have also found that there is no relationship between borough and accident contribution factors. None of the factors are significant in specific borough, so we can conclude that accident occurence reason has no regional effects. 
+
+* The last mosaic visualization provide the evidence that there is no positive relationship between accident reason severity and the number of people get hurt in the accident, but there could be negative relationship. For each accident, the vehicle types is also not correlated with the severity of the collision. We cannot infer how many people get injured or killed in the collision by the vehicle type involved in the collision.
+
+## Data Limitation
+Our data set received are comprehensive to include all accidents, but lacking accident details. There are huge number of na in each columns and we need to simulate those variables to give meaningful representation. That causes the data we could evaluate are not sufficient and many observation will include the unspecified or unknown for high occurence. Also, for question like injury and killed cases. There is no enough data to provide a general trends. We do not want to have high cases in accidents but for this data set, if could be better for us to analysis if each accident contains necessary details.
+
+## Future direction
+Though there is no significant relationship between the factors we focus and the collision rate to give a comprehensive guideline for pedestrian or drivers, our results are still meaningful in current steps with this data. We simply combine people hurt and killed in same varible, when we separate those as different level of severity, we can find is there any severity driving habit causes more people killed than injured.
+When data contains more details that problem could be more valuable and we can give a clearly relationship and investigation on it. 
+Also, the current investigation on borough is on general region, a better use could be represent those zipcode regional accidents rate in a map when data are large and there could be better separation on the frequency density among regions.
+
+## Project invokes
+This project gives us a better understanding of motor accident factors. There are relationships that we thought in general thoughts are wrong which means accident severity is also not single variable related. We could use different data visualization to focus on different problems. Correct usage of visualization type on each question are audience friendly and representative. Each step of the project is essential part to analyse real world problem and tell audience what we find. 

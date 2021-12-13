@@ -1,1 +1,406 @@
 # Results
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+```
+
+```{r}
+df <- read.csv("clean_data.csv", stringsAsFactors = F)
+# get the collisions happened in the November
+df$real_crash_date <- as.Date(df$crash_date)
+
+```
+
+
+
+## How prevalent is collision in each borough?
+```{r, fig.width=15, fig.height=15}
+library(gridExtra, warn.conflicts = FALSE)
+Brook <- df %>% filter(str_detect(borough, 'BROOKLYN') )
+Queen <- df %>% filter(str_detect(borough, 'QUEENS') )
+Staten <- df %>% filter(str_detect(borough, 'STATEN ISLAND') )
+Mahattan <- df %>% filter(str_detect(borough, 'MANHATTAN') )
+bronx <- df %>% filter(str_detect(borough, 'BRONX') )
+# Draw the plot for each loc
+h1 <- ggplot(Brook, aes(x = real_crash_date)) + geom_histogram(aes(y = ..density..), color = "red", fill =NA, binwidth = 3) + geom_density(alpha = 0.1, colour = "red", fill = "red" )  + ggtitle("Brook") + xlab("Date")
+
+h2 <- ggplot(Queen, aes(x = real_crash_date)) + geom_histogram(aes(y = ..density..), color = "darkolivegreen3", fill =NA, binwidth = 3) + geom_density(alpha = 0.1, colour = "darkolivegreen3", fill = "darkolivegreen3" )  + ggtitle("Queen") + xlab("Date")
+
+h3 <- ggplot(Staten, aes(x = real_crash_date)) + geom_histogram(aes(y = ..density..), color = "cyan3", fill =NA, binwidth = 3) + geom_density(alpha = 0.1, colour = "cyan3", fill = "cyan3" )  + ggtitle("Staten") + xlab("Date")
+
+h4 <- ggplot(Mahattan, aes(x = real_crash_date)) + geom_histogram(aes(y = ..density..), color = "darkorchid2", fill =NA, binwidth = 3) + geom_density(alpha = 0.1, colour = "darkorchid2", fill = "darkorchid2" )  + ggtitle("Mahattan") + xlab("Date")
+
+h5 <- ggplot(bronx, aes(x = real_crash_date)) + geom_histogram(aes(y = ..density..), color = "sienna1", fill =NA, binwidth = 3) + geom_density(alpha = 0.1, colour = "sienna1", fill = "sienna1" )  + ggtitle("Bronx") + xlab("Date")
+# Combine these plots
+grid.arrange(h1, h2, h3, h4, h5, ncol=2, nrow =3)
+```
+We studied the occurrences of collision from October-01 to November-15 given by the data source. Then we have a first insight about the frequences of the collision in the total five borough in the New York city. From the graph, we could see that throught the whole time periods, the frequency stay significantly high for all these five borough. That means we cannot specify the relationship between borough and collision occurence from this step. Also, there is not convex in all these five graphs which means that collision is a non-neglectable factors that threats our life. Then we create a ridge graph below to see if we can find a clear comparison among all five borough in a single graph.
+
+
+
+
+
+```{r, warning=FALSE}
+
+library(ggridges)
+df1 <- df %>% filter(!is.na(borough))
+
+ggplot(df1, aes(y = reorder(borough, real_crash_date, median),x = real_crash_date)) + 
+  geom_density_ridges(color = "blue", fill = "lightblue", alpha = 0.8, scale = 1.1) + 
+  theme_grey(16) + ylab("borough")
+```
+
+In the ridge graph, only staten island has some occasionally date contains more accidents than average. All five borough frequency of collision is still in a mild and general trend which means the average case per location is consistent through all dates. 
+There is no clear difference in terms of the number of collisions happened within each borough since we both believe that maybe mahattan will have more collision than other borough depending on intense level of traffic density. That could also means that traffic density is not directly related to the occurence of motor accident occurence. 
+
+There could be reasons like, high traffic density induce the congestion time and decrease the average driving speed. That results in a low possibility for collision. Another possible reason is people who prefer to ride motor than car choose to take subway in companion with intense traffic density. Then we could focus down to find are there specific region within each borough are significant that we could be aware of those region for collision occurence.
+
+
+```{r, fig.width=15, fig.height=15, warning=FALSE}
+total1 <- nrow(df1)
+tmp1 <- df %>% filter(borough == "BROOKLYN") %>% group_by(zip_code) %>% summarise(count = n()/total1)
+tmp2 <- tail(tmp1[order(tmp1$count),],5)
+tmp2$borough <- "BROOKLYN"
+tmp2$zip_code <- as.character(tmp2$zip_code)
+p1 <- ggplot(tmp2, aes( x = reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+
+tmp3 <- df %>% filter(borough == "QUEENS") %>% group_by(zip_code) %>% summarise(count = n()/total1)
+tmp4 <- tail(tmp3[order(tmp3$count),],5)
+tmp4$borough <- "QUEENS"
+tmp4$zip_code <- as.character(tmp4$zip_code)
+p2 <- ggplot(tmp4, aes(  reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+
+
+
+tmp5 <- df %>% filter(borough == "MANHATTAN") %>% group_by(zip_code) %>% summarise(count = n()/total1)
+tmp6 <- tail(tmp5[order(tmp5$count),],5)
+tmp6$borough <- "MANHATTAN"
+tmp6$zip_code <- as.character(tmp6$zip_code)
+p3 <- ggplot(tmp6, aes(  reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+
+
+
+tmp7 <- df %>% filter(borough == "STATEN ISLAND") %>% group_by(zip_code) %>% summarise(count = n()/total1)
+tmp8 <- tail(tmp7[order(tmp7$count),],5)
+tmp8$borough <- "STATEN ISLAND"
+tmp8$zip_code <- as.character(tmp8$zip_code)
+p4 <- ggplot(tmp8, aes( reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+
+
+tmp9 <- df %>% filter(borough == "BRONX") %>% group_by(zip_code) %>% summarise(count = n()/total1)
+tmp10 <- tail(tmp9[order(tmp9$count),],5)
+tmp10$borough <- "BRONX"
+tmp10$zip_code <- as.character(tmp10$zip_code)
+p5 <- ggplot(tmp10, aes( reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+
+
+layout <- "
+  AAAAAAAAAA
+  AAAAAAAAAA
+  BBBBBBBBBB
+  BBBBBBBBBB
+  cccccccccc
+  cccccccccc
+  DDDDDDDDDD
+  DDDDDDDDDD
+  EEEEEEEEEE
+  EEEEEEEEEE
+  "
+p <- p1 + p2 + p3 + p4 +p5 + plot_layout(design = layout)
+p
+```
+We could then check through within each borough, corresponding to the total amount of occurence, which region represents by the zip_code would be representative data. We divided the count by the total occurences and generate the top 5 region that has the most percentage occurence within each borough. We could see mose borough does not have a significant region while brooklyn and manhattan both have one that has most occurences further from others. In brooklyn, the region with zip code 10027 and in manhattan, the region with zip code 10002 are representative region within each borough. We could also conclude that people could take more precaution when going to those place as they have motor accidents much more often than others. 
+
+
+## Will the borough caused the contributing vehicle factors behaved differently?
+```{r }
+library(RColorBrewer)
+library(vcd)
+# creating a new df which will add a new row if it has more than one contributing factor
+df_1 <- df
+total_raw <- nrow(df_1)
+for (row in 1:total_raw) {
+  if (is.na(df_1[row, "contributing_factor_vehicle_1"]) == FALSE) {
+    if (is.na(df_1[row, "contributing_factor_vehicle_2"]) == FALSE) {
+      if (df_1[row, "contributing_factor_vehicle_2"] != 0) {
+        current_row <- df_1[row,] 
+        current_row$contributing_factor_vehicle_1 <- df_1[row,"contributing_factor_vehicle_2"] 
+        df_1[nrow(df_1) + 1,] = current_row
+      }
+    }
+    if (is.na(df_1[row, "contributing_factor_vehicle_3"]) == FALSE) {
+      if (df_1[row, "contributing_factor_vehicle_3"] != 0) {
+        current_row <- df_1[row,] 
+        current_row$contributing_factor_vehicle_1 <- df_1[row,"contributing_factor_vehicle_3"] 
+        df_1[nrow(df_1) + 1,] = current_row
+      }
+    }
+    if (is.na(df_1[row, "contributing_factor_vehicle_4"]) == FALSE) {
+      if (df_1[row, "contributing_factor_vehicle_4"] != 0) {
+        current_row <- df_1[row,] 
+        current_row$contributing_factor_vehicle_1 <- df_1[row,"contributing_factor_vehicle_4"] 
+        df_1[nrow(df_1) + 1,] = current_row
+      }
+    }
+    if (is.na(df_1[row, "contributing_factor_vehicle_5"]) == FALSE) {
+      if (df_1[row, "contributing_factor_vehicle_5"] != 0) {
+        current_row <- df_1[row,] 
+        current_row$contributing_factor_vehicle_1 <- df_1[row,"contributing_factor_vehicle_5"] 
+        df_1[nrow(df_1) + 1,] = current_row
+      }
+    }
+  }
+   
+}
+
+```
+
+Before doing the analysis of the potential patterns hidden between the different borough and different contribution factors, we need to first do some revisement on the original dataset since we know that for each collison, they might have more than 1 contributing vehicle factors. Thus, we could not simply just used the single column like `contributing_vehicle_1`to plot the graph. What we did is just creating a new row with same information but replace the `contributing_vehicle_1` with `contributing_vehicle_2`, `contributing_vehicle_3`, and etc if these values existr. Then we could create the dot plot graph for the top30 contributing factors for the whole New York city which is the graph below. However, this plot may also include the cases where the borough are missing.
+```{r, fig.width=10, fig.height=10}
+
+total30 <- as.data.frame(tail(sort(table(df_1$contributing_factor_vehicle_1)),30))
+total30 <- transform(total30, Var1 = as.character(Var1))
+ggplot(total30, aes(x=Freq, y=reorder(Var1, Freq))) + geom_point(size=5,color = "blue") + ggtitle("The dot plot for the top30 contributing vehicle factors in New York City") + ylab("factors") + xlab("count") + theme_linedraw() + theme(plot.title = element_text(size = 20, face = "bold"))
+```
+
+From the plot, the dot plot for the top30 contributing vehicle factors in New York City, we could clearly say that the unspecified contributing factors exceeds other contributing factors far away. We think that this phenomenon is attributed to the reason that it is impossible for the police to witness the collision by themselves and usually people will argue about the responsibilities of the collision. Thus it is hard to police to clearly state the contributing factors clearly and they will simply use unspecified to be the contributing factors. And we could also know that the distraction, failure to the right-way, and following too closely are the three other dominant factors to contribute the collision other than the unspecified which is not surprised since people usually will make mistakes on these aspects. But one interesting pattern is that only a small fraction of collision are caused by the alcohol investment but alcohol culture has been deeply rooted in U.S. 
+. However, alcohol investment are the main factor to cause the collision in China which we could see that Americans are more likely still obey the rules even they got drunk. Let us focus our attention back to the hidden relationship between borough and contributing factors since from the above graph, we know nothing about borough.
+
+```{r, warning = FALSE, fig.width=10, fig.height=10}
+total30 <- as.data.frame(tail(sort(table(df_1$contributing_factor_vehicle_1)),30))
+total30 <- transform(total30, Var1 = as.character(Var1))
+
+
+brooknames <- df_1 %>% filter(borough == "BROOKLYN") %>% filter((contributing_factor_vehicle_1 %in% total30$Var1) == TRUE )%>%count(contributing_factor_vehicle_1, sort = TRUE) %>% na.omit()
+colnames(brooknames) <- c("cf", "count")
+
+queennames <- df_1 %>% filter(borough == "QUEENS") %>% filter(contributing_factor_vehicle_1 %in% total30$Var1 )%>%count(contributing_factor_vehicle_1, sort = TRUE) %>% na.omit()
+colnames(queennames) <- c("cf", "count")
+
+mahattannames <- df_1 %>% filter(borough == "MANHATTAN") %>% filter(contributing_factor_vehicle_1 %in% total30$Var1 )%>%count(contributing_factor_vehicle_1, sort = TRUE) %>% na.omit()
+colnames(mahattannames) <- c("cf", "count")
+
+statenames <- df_1 %>% filter(borough == "STATEN ISLAND") %>% filter(contributing_factor_vehicle_1 %in% total30$Var1 )%>%count(contributing_factor_vehicle_1, sort = TRUE) %>% na.omit()
+colnames(statenames) <- c("cf", "count")
+
+bronxnames <- df_1 %>% filter(borough == "BRONX") %>% filter(contributing_factor_vehicle_1 %in% total30$Var1 )%>%count(contributing_factor_vehicle_1, sort = TRUE) %>% na.omit()
+colnames(bronxnames) <- c("cf", "count")
+
+combined <- merge(x = brooknames, y = queennames, by = "cf", all = TRUE)
+
+combined <- merge(x = combined, y = mahattannames, by = "cf", all = TRUE)
+combined <- merge(x = combined, y = statenames, by = "cf", all = TRUE)
+combined <- merge(x = combined, y = bronxnames, by = "cf", all = TRUE)
+colnames(combined) <- c("contributong_factor","brook_count", "queen_count", "mahattan_count", "stateisland_count", "bronx_count")
+combined[is.na(combined)] = 0
+
+combined$total <- rep(1,nrow(combined))
+for (i in 1:nrow(combined)) {
+  combined$total[i] <- combined$brook_count[i] + combined$queen_count[i] + combined$mahattan_count[i] + combined$stateisland_count + combined$bronx_count
+}
+mostCombined <- combined[order(-combined$total),][1:30,]
+
+
+
+mostCombined3 <- data.frame(matrix(ncol = 3, nrow = 0))
+x <- c("contributing_factor", "count", "borough")
+colnames(mostCombined3) <- x
+
+for (i in 1:nrow(mostCombined)) {
+  temp1 <- c(mostCombined$contributong_factor[i], mostCombined$brook_count[i],"Brooklyn")
+  mostCombined3 <- rbind(mostCombined3, temp1)
+  temp2 <- c(mostCombined$contributong_factor[i], mostCombined$queen_count[i],"Queens")
+  mostCombined3 <- rbind(mostCombined3, temp2)
+  temp3 <- c(mostCombined$contributong_factor[i], mostCombined$mahattan_count[i],"Mahattan")
+  mostCombined3 <- rbind(mostCombined3, temp3)
+  temp4 <- c(mostCombined$contributong_factor[i], mostCombined$stateisland_count[i],"Staten Island")
+  mostCombined3 <- rbind(mostCombined3, temp4)
+  temp5 <- c(mostCombined$contributong_factor[i], mostCombined$bronx_count[i],"Bronx")
+  mostCombined3 <- rbind(mostCombined3, temp5)
+  temp6 <- c(mostCombined$contributong_factor[i], mostCombined$total[i],"total")
+  mostCombined3 <- rbind(mostCombined3, temp6)
+}
+
+colnames(mostCombined3) <- x
+mostCombined3$count <- as.integer(mostCombined3$count)
+
+
+ggplot(mostCombined3, aes(x=count, y=reorder(contributing_factor, count), color=borough)) + geom_point(size=5) + ggtitle("The dot plot for the top30 contributing vehicle factors in New York City include borough separation") + ylab("factors") + theme_linedraw()+ theme(plot.title = element_text(size = 20, face = "bold"))
+```
+
+We create a new graph above to see how contributing factors behave in different borough and how they behave differently compared with the graph representing the whole New York City. We could clearly see that these contribution factors behave similar with the graph representing the collision cases in the whole New York City since the order of these contributing factors are the same and dots follows the similar trends from the overall aspect.In general, each borough factors are in the order of the occurence of accidents in ther increasing order where Staten Island has least frequency. Besides, we could also see that the dots representing the borough will basically clustered together in the same row except Unspecified and Driving distraction which further proves that the borough might not exist a relationship between the borough and the contributing factors. As for the unspecified, these five borough are separte but as for driving distraction, Queen, Mahattan, and Brooklynforms a group and Bronx and Staten Island forms another group. We know that the streets are closed and narrow sometimes in Queen, Mahattan, and Brooklyn which might caused the driving distraction. But from the overall aspect, we do not think there is a clear relationship between borough and the contributing factors.
+
+
+
+## Relation of the contributing factors or vehicle type code with the people get hurt in the collision.
+For this question, we want to investigate whether there is a relationship between the contributing vehicle factors and the people that got injured during the collision or a relationship between the vehicle type that got involved and the people that got injured during the collision. At first, we want to split the cases of people got injured and people got killed separately but we find that the cases of people got killed during the collision are really small. Thus, it is really hard to detect some relationship from the graph for the killed cases. We simply combine the sum of cases of people got injured and killed as case hurt to see more general relationship between severity and contributing factors. Then we plot two graph below to show the whether the hidden relationship exist or not.
+
+```{r fig.width=15, fig.height=15}
+temp1 <- as.data.frame(tail(sort(table(df$contributing_factor_vehicle_1)),18))
+temp1 <- head(temp1, 17)
+
+temp2 <- df %>% filter(contributing_factor_vehicle_1 %in% temp1$Var1)
+temp2$behaviorStatus <- 0
+
+for (row in 1:nrow(temp2)) {
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Aggressive Driving/Road Rage") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "View Obstructed/Limited") {
+    temp2[row, "behaviorStatus"] = "normal"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Pedestrian/Bicyclist/Other Pedestrian Error/Confusion") {
+    temp2[row, "behaviorStatus"] = "moderate"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Alcohol Involvement") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Reaction to Uninvolved Vehicle") {
+    temp2[row, "behaviorStatus"] = "normal"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Unsafe Lane Changing") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Driver Inexperience") {
+    temp2[row, "behaviorStatus"] = "normal"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Turning Improperly") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Other Vehicular") {
+    temp2[row, "behaviorStatus"] = "moderate"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Traffic Control Disregarded") {
+    temp2[row, "behaviorStatus"] = "normal"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Backing Unsafely") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Unsafe Speed") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Passing Too Closely") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Passing or Lane Usage Improper") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Following Too Closely") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Failure to Yield Right-of-Way") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Driver Inattention/Distraction") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+  if (temp2[row, "contributing_factor_vehicle_1"][[1]] == "Unspecified") {
+    temp2[row, "behaviorStatus"] = "severe"
+  }
+}
+
+temp2$number_of_persons_killed <- as.integer(temp2$number_of_persons_killed)
+temp2$number_of_persons_injured <- as.integer(temp2$number_of_persons_injured)
+
+temp2 <- temp2 %>% 
+    rowwise() %>% 
+    mutate(hurt = sum(c(number_of_persons_killed, number_of_pedestrians_killed,number_of_cyclist_killed, number_of_motorist_killed, number_of_persons_injured, number_of_pedestrians_injured,number_of_cyclist_injured, number_of_motorist_injured)))
+temp2 <- temp2 %>% filter(hurt <= 10)
+fillcolors <- brewer.pal(3, "Reds")
+mosaic(behaviorStatus ~ hurt, direction = c("v", "h"), temp2,labeling = labeling_border(tl_labels = c(FALSE, TRUE)),
+       highlighting_fill = fillcolors, main = "Relation between accident factor severity and people hurt")
+
+
+```
+
+Before analyzing the graph above, we need to do some predictions and revisement for the dataset. Since we want to investigate the relationship between contributing factors and the people got hurt during the collision, we first filter the data frame by only caring about the occurrences of contributing factors which is larger than 100. Then we classify these factors as three dangerous levels of driving behavior. These three levels are severe, normal and moderate and we first classify the severe behavior according to the top 10 most dangerous driving habits from Brandon Myers(March, 2021). Then for the rest factors, if it is directly correlated with drivers themselves, we classify it as normal. Otherwise, we define it as moderate since these factors are out of your control like the factor `Other Vehicles`.
+
+Then, we made some assumption. Both of us think that the number of people got injured during collision should be positively correlated with the level of behavior status. Since the more danger behavior, the more people might got involved in this collision. For example, got drunk during driving is definitely a risky behavior and we usually see that Drunk driving will causes several people got hurt or even killed. Thus, we made the assumption that behavior level is positively correlated with the number of people got hurt in collision. 
+
+However, things do not happen from the truth. What reflected on the graph is not in the same case. We could see from the graph that the deep red represent the severe behavior but it gradually decreased as the number of people got injured increases. Although the fluctuation is not large, the trend is really clear which is kind of confusing. And we could also see that the normal and moderate are positively causing more people to get involved in the collision which might caused by the coincidence since the cases are really small. Thus, from the graph, we think the truth from the graph contradicts our assumption. But we are questioning that maybe risky behavior are more lethal than normal and moderate behavior but since we have fewer data that has people got killed, we can not get a precise conclusion here and maybe we will investigate and discuss it in the future. FOr now, let us focus on the relationship between vehicle type and the number of people got injured in the collision.
+
+
+```{r fig.width=15, fig.height=15}
+
+temp3 <- as.data.frame(tail(sort(table(df$vehicle_type_code1)),20))
+temp3 <- temp3 %>% filter(Freq > 50)
+
+temp4 <- df %>% filter(vehicle_type_code1 %in% temp3$Var1)
+temp4$vehicleType <- 0
+
+for (row in 1:nrow(temp4)) {
+  if (temp4[row, "vehicle_type_code1"][[1]] == "E-Scooter") {
+    temp4[row, "vehicleType"] = "mini"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Ambulance") {
+    temp4[row, "vehicleType"] = "car"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Van") {
+    temp4[row, "vehicleType"] = "car"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Tractor Truck Diesel") {
+    temp4[row, "vehicleType"] = "truck"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Tractor Truck Diesel") {
+    temp4[row, "vehicleType"] = "truck"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Motorcycle") {
+    temp4[row, "vehicleType"] = "mini"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "E-Bike") {
+    temp4[row, "vehicleType"] = "mini"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Bike") {
+    temp4[row, "vehicleType"] = "mini"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Box Truck") {
+    temp4[row, "vehicleType"] = "truck"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Bus") {
+    temp4[row, "vehicleType"] = "truck"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Pick-up Truck") {
+    temp4[row, "vehicleType"] = "truck"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Taxi") {
+    temp4[row, "vehicleType"] = "car"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Station Wagon/Sport Utility Vehicle") {
+    temp4[row, "vehicleType"] = "car"
+  }
+  if (temp4[row, "vehicle_type_code1"][[1]] == "Sedan") {
+    temp4[row, "vehicleType"] = "car"
+  }
+}
+
+
+
+temp4$number_of_persons_killed <- as.integer(temp4$number_of_persons_killed)
+temp4$number_of_persons_injured <- as.integer(temp4$number_of_persons_injured)
+
+temp4 <- temp4 %>% 
+    rowwise() %>% 
+    mutate(hurt = sum(c(number_of_persons_killed, number_of_pedestrians_killed,number_of_cyclist_killed, number_of_motorist_killed, number_of_persons_injured, number_of_pedestrians_injured,number_of_cyclist_injured, number_of_motorist_injured)))
+
+
+fillcolors <- brewer.pal(3, "Blues")
+temp4 <- temp4 %>% filter(hurt <= 10)
+mosaic(vehicleType ~ hurt, direction = c("v", "h"), temp4,labeling = labeling_border(tl_labels = c(FALSE, TRUE)),
+       highlighting_fill = fillcolors, main = "Relation between car type and people hurt")
+
+```
+
+As we did similarly in the previous graph, for the vehicle type part, we also filter the data frame if the occurrences of vehicle type is more than 50 and we classify the type of vehicle as "car", "truck" and "mini". Let us explain the type of car a little bit here:
+
+Column Name| Represents for
+------------- | -------------
+"car" |  both the automobile and the cart which are used for carrying people
+"truck" | those large trucks for delivering goods
+"mini" |smaller transportation tools like bike and motorcycle
+
+We both believe that the larger the vehicle type, the more people got involved in this collision since like if the truck rollover on the road or highway, it is really easy to attack nearby cars or the nearby people which causes more people to get involved. Thus, we think if the vehicle size increases, more people that got hurt will get involved which means they are positively correlated.
+
+However, the fact that we got from the graph contradicts our assumption again. We could clearly see from the graph that the dark blue representing the truck is slowly decreasing as hurt increases. This happened same to the auto group tut the `mini` increases significantly when the hurt is 1 and 2. We think the reason behind this is the prevalence of motorcycle in the U.S. But we could see from the whole graph that the auto still occupies the biggest part. In a word, from this graph, the pattern is not that clear so that we can not make a concrete conclusion about the relationship between size of vehicle and the number of people got hurt during collision. 
+
+Reference: Brandon Myers is a Drivers Education and Safe Driving enthusiast. After a rollover vehicle crash and DUI. (2021, March 23). The 10 most dangerous driving habits. DefensiveDriving.org. Retrieved December 13, 2021, from https://www.defensivedriving.org/dmv-handbook/the-10-most-dangerous-driving-habits/. 

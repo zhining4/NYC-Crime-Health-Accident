@@ -1,1 +1,73 @@
 # Data transformation
+
+```{r}
+# load library
+library(tidyverse)
+
+```
+
+```{r}
+# da
+df <- read.csv("all_sample.csv", stringsAsFactors = F)
+df[is.na(df)] <- ""
+```
+## Data loading and cleaning
+Our dataset is first derived from the API using the Python Pandas and save it into a csv file. Then we use the read.csv file to reload it into the data frame df. We could find and see that there are lots of missing values in the dataset therefore we need to carefully handle all these values. We first do some data cleaning. We could find that we have location column which is a pair of the latitude and longitude. Thus, we could simply drop the latitude and longitude to release some memories for our ram since this dataset is really big. Besides, we also choose the data from October to the most recent date to do the analysis since we only care about the general trend of collision with borough area and our ram is limited. 
+```{r}
+df = subset(df, select = -c(latitude, longitude) )
+#df
+```
+
+## Feature Creation
+```{r}
+df <- df %>% mutate_all(na_if,"")
+# get the collisions happened in the November
+df$real_crash_date <- as.Date(df$crash_date)
+df <- subset(df, real_crash_date > as.Date("2021-10-01") )
+```
+We create a new column called `real_crash_date` since when we find that we can not use the crash_date as the standard to distinguish whether this collision is what we want. Thus, we simply convert this column to another column called real_crash_date which is in the format of year-mon-date and then we could get the data from January to newest.
+
+## Data preprocessing
+As we said previously, we find that there are so many data that are missing but actually you will find that they are not truly missing. Take the `contributing factor vehicle` for example, we find that this dataset defines five columns for such factor. However, I believe no more than 95% collisions only up to 2 columns have specific content for this aspect and most collisions does not have more than 2 factors. Our missing value analysis will further evaluate why those values are missing in our dataset. For each collision, it must has at least one factor to cause it to happen. Thus, for the collisions that have at least one contributing factor, we fill 0 to avoid that our missing pattern in next section regarding them as missing values. But for collisions that all 5 factors are missing, we will keep them all as NA values which will be shown in the next missing values section. Similar reason for the vehicle type code. But for all the other columns, I simply keep them as NA if it is blank since they are truly missing.
+
+```{r}
+for (row in 1:nrow(df)) {
+  if (is.na(df[row, "contributing_factor_vehicle_1"]) == FALSE) {
+    if (is.na(df[row, "contributing_factor_vehicle_2"]) == TRUE) {
+      df[row, "contributing_factor_vehicle_2"] <- 0
+    }
+    if (is.na(df[row, "contributing_factor_vehicle_3"]) == TRUE) {
+    
+      df[row, "contributing_factor_vehicle_3"] <- 0
+    }
+    if (is.na(df[row, "contributing_factor_vehicle_4"]) == TRUE) {
+
+      df[row, "contributing_factor_vehicle_4"] <- 0
+    }
+    if (is.na(df[row, "contributing_factor_vehicle_5"]) == TRUE) {
+
+      df[row, "contributing_factor_vehicle_5"] <- 0
+    }
+  }
+  if (is.na(df[row, "vehicle_type_code1"]) == FALSE) {
+    if (is.na(df[row, "vehicle_type_code2"]) == TRUE) {
+      df[row, "vehicle_type_code2"] <- 0
+    }
+    if (is.na(df[row, "vehicle_type_code_3"]) == TRUE) {
+      df[row, "vehicle_type_code_3"] <- 0
+    }
+    if (is.na(df[row, "vehicle_type_code_4"]) == TRUE) {
+      df[row, "vehicle_type_code_4"] <- 0
+    }
+    if (is.na(df[row, "vehicle_type_code_5"]) == TRUE) {
+      df[row, "vehicle_type_code_5"] <- 0
+    }
+  }
+}
+
+
+```
+```{r}
+write_csv(df, "clean_data.csv")
+```
+

@@ -1,3 +1,57 @@
 # Interactive component
 
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<h1>Accidents occurence percentage during different time period within a day</h1>
+  
+  
+  <div id="graph">
+  
+  <select id="dayPeriod"></select>
+  
+  </div>
+
+<script src="script/interactivegraph.js"></script>
+
+Each time period formed by conventional separation of a day in the following format:
+
+Time Period| Time Span
+------------- | -------------
+morning |  5:00 - 10:00
+noon | 10:00 - 14:00
+afternoon | 14:00 - 18:00
+evening | 18:00 - 22:00
+midnight | 22:00 - 5:00
+
+This interactive plot allow us to observe what the percentage frequency of accidents occur during different time period within a day. We use the percentage instead of count directly to avoid some value in graph to be too obvious due to a single special date. This graph is in purpose of showing how different time period contribute to the likelihood of having the accidents. Percentage frequency provide the direct relationship we want to focus in this question. 
+
+After interact with the graph, we could see the frequency descending in that order: morning, afternoon, noon, evening, midnight. Where data between noon and evening is on average at same percentage contribution. We could see that even midnight has the longest time period division, midnight has the least percentage of accidents occurence corresponding to the real world. There is no significant strange data from the graph represents motor accidents have special features. 
+
+As transportation is in high volume for morning and afternoon, then middle volume for noon and evening, low volume in midnight, the motor accidents follows the traffic density of daily life. We can conclude that there is no instruction about when is safe to ride motor cycle outside without further investigate into specific location and the traffic density in each borough at given time period. We still need more data to provide any useful instructions to avoid motor accidents by time period.
+
+
+
+
+
+```{r, echo = F, message=F}
+
+time = as.numeric(strptime(inter$crash_time, format = "%H:%M", tz = "EST"))
+time = time - (time[1] - 29100)
+inter$type <- as.factor(ifelse(time < 36000, 'morning',
+                     ifelse(time < 50400, 'noon', 
+                     ifelse(time < 64800, 'afternoon', 
+                     ifelse(time < 79200, 'evening', 
+                     ifelse(time < 18000, 'midnight', 'midnight'))))))
+
+interactive_data <- inter %>% 
+  group_by(real_crash_date, day_period) %>%
+  count() 
+
+period_pect <- interactive_data %>%
+  group_by(real_crash_date) %>%
+  mutate(freq = round(n / sum(n), 3)) 
+
+
+write.csv(period_pect, "interactive.csv")
+```
+
 

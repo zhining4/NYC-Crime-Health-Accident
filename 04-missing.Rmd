@@ -28,7 +28,7 @@ collision_2021_11_Plot
 
 We summarize this November-2021 data to provide a sufficient and recognizable missing pattern. 
 
-For better understanding for the first draft, I will explain those variables there. In the complete version we will introduce variable explaination for all datasets in data source chapter.
+For better understanding， I will explain significant missing variables there.
 
 Column Name| Meaning
 ------------- | -------------
