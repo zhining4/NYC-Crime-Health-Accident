@@ -15,7 +15,7 @@ df$real_crash_date <- as.Date(df$crash_date)
 
 
 ## How prevalent is collision in each borough?
-```{r, fig.width=15, fig.height=15}
+```{r, fig.width=10, fig.height=10}
 library(gridExtra, warn.conflicts = FALSE)
 Brook <- df %>% filter(str_detect(borough, 'BROOKLYN') )
 Queen <- df %>% filter(str_detect(borough, 'QUEENS') )
@@ -57,19 +57,21 @@ There is no clear difference in terms of the number of collisions happened withi
 There could be reasons like, high traffic density induce the congestion time and decrease the average driving speed. That results in a low possibility for collision. Another possible reason is people who prefer to ride motor than car choose to take subway in companion with intense traffic density. Then we could focus down to find are there specific region within each borough are significant that we could be aware of those region for collision occurence.
 
 
-```{r, fig.width=15, fig.height=15, warning=FALSE}
+```{r, fig.width=10, fig.height=10, warning=FALSE}
 total1 <- nrow(df1)
 tmp1 <- df %>% filter(borough == "BROOKLYN") %>% group_by(zip_code) %>% summarise(count = n()/total1)
 tmp2 <- tail(tmp1[order(tmp1$count),],5)
 tmp2$borough <- "BROOKLYN"
 tmp2$zip_code <- as.character(tmp2$zip_code)
-p1 <- ggplot(tmp2, aes( x = reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+p1 <- ggplot(tmp2, aes( x = reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")+ scale_y_continuous(limits = c(0,0.05))+
+  theme(axis.title.x=element_blank(),axis.title.y=element_blank())
 
 tmp3 <- df %>% filter(borough == "QUEENS") %>% group_by(zip_code) %>% summarise(count = n()/total1)
 tmp4 <- tail(tmp3[order(tmp3$count),],5)
 tmp4$borough <- "QUEENS"
 tmp4$zip_code <- as.character(tmp4$zip_code)
-p2 <- ggplot(tmp4, aes(  reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+p2 <- ggplot(tmp4, aes(  reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")+ scale_y_continuous(limits = c(0,0.05))+
+  theme(axis.title.x=element_blank(),axis.title.y=element_blank())
 
 
 
@@ -77,7 +79,8 @@ tmp5 <- df %>% filter(borough == "MANHATTAN") %>% group_by(zip_code) %>% summari
 tmp6 <- tail(tmp5[order(tmp5$count),],5)
 tmp6$borough <- "MANHATTAN"
 tmp6$zip_code <- as.character(tmp6$zip_code)
-p3 <- ggplot(tmp6, aes(  reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+p3 <- ggplot(tmp6, aes(  reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")+ scale_y_continuous(limits = c(0,0.05))+
+  theme(axis.title.x=element_blank(),axis.title.y=element_blank())
 
 
 
@@ -85,14 +88,16 @@ tmp7 <- df %>% filter(borough == "STATEN ISLAND") %>% group_by(zip_code) %>% sum
 tmp8 <- tail(tmp7[order(tmp7$count),],5)
 tmp8$borough <- "STATEN ISLAND"
 tmp8$zip_code <- as.character(tmp8$zip_code)
-p4 <- ggplot(tmp8, aes( reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+p4 <- ggplot(tmp8, aes( reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")+ scale_y_continuous(limits = c(0,0.05))+
+  theme(axis.title.y=element_blank())
 
 
 tmp9 <- df %>% filter(borough == "BRONX") %>% group_by(zip_code) %>% summarise(count = n()/total1)
 tmp10 <- tail(tmp9[order(tmp9$count),],5)
 tmp10$borough <- "BRONX"
 tmp10$zip_code <- as.character(tmp10$zip_code)
-p5 <- ggplot(tmp10, aes( reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")
+p5 <- ggplot(tmp10, aes( reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")+ scale_y_continuous(limits = c(0,0.05))+
+  theme(axis.title.x=element_blank())
 
 
 layout <- "
@@ -107,10 +112,12 @@ layout <- "
   EEEEEEEEEE
   EEEEEEEEEE
   "
-p <- p1 + p2 + p3 + p4 +p5 + plot_layout(design = layout)
+p <- p1 + p2 + p5 + p3 + p4 + plot_layout(design = layout)
 p
+
+
 ```
-We could then check through within each borough, corresponding to the total amount of occurence, which region represents by the zip_code would be representative data. We divided the count by the total occurences and generate the top 5 region that has the most percentage occurence within each borough. We could see mose borough does not have a significant region while brooklyn and manhattan both have one that has most occurences further from others. In brooklyn, the region with zip code 10027 and in manhattan, the region with zip code 10002 are representative region within each borough. We could also conclude that people could take more precaution when going to those place as they have motor accidents much more often than others. 
+We could then check through within each borough, corresponding to the total amount of occurence, which region represents by the zip_code would be representative data. We divided the count by the total occurences and generate the top 5 region that has the most percentage occurence within each borough. By comparison, brooklyn has the highest collision rate region compare to other zip code region within brooklyn. That means when people stay in brooklyn, people can try to avoid go to those region as comparatively other region within brooklyn are safer. We could see most borough does not have a significant region while brooklyn and manhattan both have one that has most occurences further from others. In brooklyn, the region with zip code 11207 and in manhattan, the region with zip code 10002 are representative region within each borough. We could also conclude that people could take more precaution when going to those place as they have motor accidents much more often than others. 
 
 
 ## Will the borough caused the contributing vehicle factors behaved differently?
@@ -157,6 +164,7 @@ for (row in 1:total_raw) {
 ```
 
 Before doing the analysis of the potential patterns hidden between the different borough and different contribution factors, we need to first do some revisement on the original dataset since we know that for each collison, they might have more than 1 contributing vehicle factors. Thus, we could not simply just used the single column like `contributing_vehicle_1`to plot the graph. What we did is just creating a new row with same information but replace the `contributing_vehicle_1` with `contributing_vehicle_2`, `contributing_vehicle_3`, and etc if these values existr. Then we could create the dot plot graph for the top30 contributing factors for the whole New York city which is the graph below. However, this plot may also include the cases where the borough are missing.
+
 ```{r, fig.width=10, fig.height=10}
 
 total30 <- as.data.frame(tail(sort(table(df_1$contributing_factor_vehicle_1)),30))
@@ -318,7 +326,7 @@ Before analyzing the graph above, we need to do some predictions and revisement 
 
 Then, we made some assumption. Both of us think that the number of people got injured during collision should be positively correlated with the level of behavior status. Since the more danger behavior, the more people might got involved in this collision. For example, got drunk during driving is definitely a risky behavior and we usually see that Drunk driving will causes several people got hurt or even killed. Thus, we made the assumption that behavior level is positively correlated with the number of people got hurt in collision. 
 
-However, things do not happen from the truth. What reflected on the graph is not in the same case. We could see from the graph that the deep red represent the severe behavior but it gradually decreased as the number of people got injured increases. Although the fluctuation is not large, the trend is really clear which is kind of confusing. And we could also see that the normal and moderate are positively causing more people to get involved in the collision which might caused by the coincidence since the cases are really small. Thus, from the graph, we think the truth from the graph contradicts our assumption. But we are questioning that maybe risky behavior are more lethal than normal and moderate behavior but since we have fewer data that has people got killed, we can not get a precise conclusion here and maybe we will investigate and discuss it in the future. FOr now, let us focus on the relationship between vehicle type and the number of people got injured in the collision.
+However, things do not happen from the truth. What reflected on the graph is not in the same case. We could see from the graph that the deep red represent the severe behavior but it gradually decreased as the number of people got injured increases. Although the fluctuation is not large, the trend is really clear which is kind of confusing. And we could also see that the normal and moderate are positively causing more people to get involved in the collision which might caused by the coincidence since the cases are really small. Thus, from the graph, we think the truth from the graph contradicts our assumption. But we are questioning that maybe risky behavior are more lethal than normal and moderate behavior but since we have fewer data that has people got killed, we can not get a precise conclusion here and maybe we will investigate and discuss it in the future. For now, let us focus on the relationship between vehicle type and the number of people got injured in the collision.
 
 
 ```{r fig.width=15, fig.height=15}
@@ -401,6 +409,6 @@ Column Name| Represents for
 
 We both believe that the larger the vehicle type, the more people got involved in this collision since like if the truck rollover on the road or highway, it is really easy to attack nearby cars or the nearby people which causes more people to get involved. Thus, we think if the vehicle size increases, more people that got hurt will get involved which means they are positively correlated.
 
-However, the fact that we got from the graph contradicts our assumption again. We could clearly see from the graph that the dark blue representing the truck is slowly decreasing as hurt increases. This happened same to the auto group tut the `mini` increases significantly when the hurt is 1 and 2. We think the reason behind this is the prevalence of motorcycle in the U.S. But we could see from the whole graph that the auto still occupies the biggest part. In a word, from this graph, the pattern is not that clear so that we can not make a concrete conclusion about the relationship between size of vehicle and the number of people got hurt during collision. 
+However, the fact that we got from the graph contradicts our assumption again. We could clearly see from the graph that the dark blue representing the truck is slowly decreasing as hurt increases. This happened same to the auto and the mini group. However the mini increases significantly when the hurt is 1 and 2. We think the reason behind this is the prevalence of motorcycle in the U.S and if the motorcycle rollolver, both people on the motorcycle will get injured. But we could still see from the whole graph that the auto still occupies the biggest part. In a word, from this graph, the pattern is not that clear so that we can not make a concrete conclusion about the postive relationship between size of vehicle and the number of people got hurt during collision. However, we think the data on the graph reflects that they are negatively correlated but more evidence is needed.
 
 Reference: Brandon Myers is a Drivers Education and Safe Driving enthusiast. After a rollover vehicle crash and DUI. (2021, March 23). The 10 most dangerous driving habits. DefensiveDriving.org. Retrieved December 13, 2021, from https://www.defensivedriving.org/dmv-handbook/the-10-most-dangerous-driving-habits/. 

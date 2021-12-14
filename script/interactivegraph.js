@@ -11,9 +11,6 @@ var svg = d3.select("#graph")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
-    /*https://raw.githubusercontent.com/zhining4/NYC-motor-accident/main/clean_data.csv*/    
-
-
 d3.csv('https://raw.githubusercontent.com/zhining4/NYC-motor-accident/main/interactive.csv').then(function(data) {
 
     var parseTime = d3.timeParse("%Y-%m-%d");
@@ -38,19 +35,9 @@ d3.csv('https://raw.githubusercontent.com/zhining4/NYC-motor-accident/main/inter
     svg.append("g")
       .call(d3.axisLeft(y));
 
-  
     var periods = ["morning","noon","afternoon","evening","midnight"]; 
-
-  
-    d3.select("#dayPeriod")
-        .selectAll('myOptions')
-        .data(periods)
-        .enter()
-        .append('option')
-        .text(d => d) 
-        .attr("value", d=>d); 
-
  
+
     var myColor = d3.scaleOrdinal()
         .domain(periods)
         .range(d3.schemeSet1);
@@ -59,37 +46,27 @@ d3.csv('https://raw.githubusercontent.com/zhining4/NYC-motor-accident/main/inter
     var line = svg
         .append('g')
         .append("path")
-        .datum(data.filter( d => d.day_period==periods[0]))
-        .attr("d", d3.line()
-            .x(d => x(d.time) )
-            .y(d => y(d.freq) )
-        )
-        .attr("stroke", myColor("valueC"))
         .style("stroke-width", 5)
         .style("fill", "none")
 
     function update(period) {
-
-        var dataFilter = data.filter( d=> d.day_period==period)
-
         line
-            .datum(dataFilter)
+            .datum(data.filter( d=> d.day_period==period))
             .transition()
-            .duration(1000)
+            .duration(2000)
             .attr("d", d3.line()
             .x(d => x(d.time) )
             .y(d => y(d.freq) )
             )
-            .attr("stroke",  myColor(period) )
+            .attr("stroke",  myColor(period))
     }
 
+    d3.selectAll("button")
+      .on("click", function () {
+      var period = d3.select(this).attr("period");
+      update(period)
+    });
 
-    d3.select("#dayPeriod").on("change", function(d) {
-   
-        var selectedOption = d3.select(this).property("value")
-
-        update(selectedOption)
-    })
-
+    update(periods[2]);
 })
 

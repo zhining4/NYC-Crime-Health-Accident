@@ -5,8 +5,11 @@
   
   
   <div id="graph">
-  
-  <select id="dayPeriod"></select>
+  <button period="morning">morning</button>
+  <button period="noon">noon</button>
+  <button period="afternoon">afternoon</button>
+  <button period="evening">evening</button>
+  <button period="midnight">midnight</button>
   
   </div>
 

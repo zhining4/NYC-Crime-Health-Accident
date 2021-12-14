@@ -7,7 +7,7 @@ site: bookdown::bookdown_site
 
 # Introduction
 
-Today, collision is still a significant factor that threats people life since according to relevant data, 33,244 people died in the motor vehicle collsions not to mention the uncountable people got irreparable injuries during the collision. The Unites States which owns the deepest and longest motor vehicle culture need to pay more concerns to this topic since we might save thousands of people's lives. However, in China where we come from, motorcycles are not allowed to drive on the streets since government believe 
+Today, collision is still a significant factor that threats people life since according to IIHS (2019), 33,244 people died in the motor vehicle collsions not to mention the uncountable people got irreparable injuries during the collision.The Unites States which owns the deepest and longest motor vehicle culture need to pay more concerns to this topic since we might save thousands of people's lives. However, in China where we come from, motorcycles are not allowed to drive on the streets since government believe 
 motor vehicles are extremely vulnerable when accidents happen than cars. Thus, the death rate caused by collisions in China is far small compared with the U.S. We want to investigate about what factors like vehicle type, contribution vehicle factor, or others are truly related with the motorcycle accidents in New York City. At the same time, we are also curious about which district in New York City has the most motorcycle accidents like Brooklyn or Queen.
 
 We will try to find following questions relationship in order to answer 3 questions:
@@ -17,3 +17,6 @@ We will try to find following questions relationship in order to answer 3 questi
 * Will the borough caused the contributing vehicle factors behaved differently?
 
 * Relation of the contributing factors or vehicle type code with the people get hurt in the collision.
+
+
+Reference: Fatality facts 2019: State by State. IIHS. (n.d.). Retrieved December 14, 2021, from https://www.iihs.org/topics/fatality-statistics/detail/state-by-state.

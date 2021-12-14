@@ -7,22 +7,16 @@ source("missing_func.R")
 ```
 
 ## Motorcycle Accident Missing Pattern
-For this first draft, we will focus on the newest November motorcycle accident data to provide a clear missing pattern with explaination.
+We will focus on the motorcycle accident data to provide a clear missing pattern with explaination.
 
 
 ```{r, echo = F, message=F}
-df <- read.csv("all_sample.csv", stringsAsFactors = F)
+df <- read.csv("clean_data.csv", stringsAsFactors = F)
 ```
 
-```{r, echo = F, message=F}
-df <- df %>% mutate_all(na_if,"")
-# get the collisions happened in the November
-df$real_crash_date <- as.Date(df$crash_date)
-df_11 <- subset(df, real_crash_date > as.Date("2021-11-01") )
-```
 
-```{r, echo = F, message=F, fig.width=15, fig.height=15}
-collision_2021_11_Plot <- plot_missing(df_11, FALSE)
+```{r, echo = F, message=F, fig.width=8, fig.height=8}
+collision_2021_11_Plot <- plot_missing(df, FALSE)
 collision_2021_11_Plot
 ```
 
@@ -38,11 +32,11 @@ on_street_name |the street on which the collision occurred
 cross_street_name | Nearest cross street to the collision
 off_street_name | Street address if known
 
-From row perspective, we could see the most representative missing pattern are accidents without having data in those columns: 'vehicle_type_code_5', 'contributing_factor_vehicle_5', 'vehicle_type_code_4', 'contributing_factor_vehicle_4', 'vehicle_type_code_3', 'contributing_factor_vehicle_3', 'cross_street_name'.
+After data cleaning, our most representative missing pattern now are accidents without having data lack of value for 'cross_street_name'.
 
-That high appearance with 7 missing columns meaning that most motorcycle collision has 2 vehicles and that type of collision are least likely appear at the the conjunction of two roads.
-Other missing pattern in frequency order also include collision without specific borough and zip code might be a minor accident.
-The third missing pattern are vehicle collision at the conjunction of two roads involving 2 vehicles.
+As cross_street, on_street, and off_street are categorical variables that are not essential for our borough discussion, the column data value with lacking cross_street_name represent that most accidents occur on_street or has a specific street location in off_street. That means most motor accidents occurs on streets instead of road intersections. The second missing pattern of on_street and off_street represents all accidents that happends at road intersections.
+
+The third missing pattern are vehicle collisions happen with on_street location variable. That kind of accidents involves street like expressway that are not distributed to any borough or zipcode region.
 
 From column perspetive, we could see that most accidents do not have more than 2 vehicles. With on_street or off_street collision appear more often than cross_street collision.
 

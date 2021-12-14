@@ -12,7 +12,7 @@ df <- read.csv("all_sample.csv", stringsAsFactors = F)
 df[is.na(df)] <- ""
 ```
 ## Data loading and cleaning
-Our dataset is first derived from the API using the Python Pandas and save it into a csv file. Then we use the read.csv file to reload it into the data frame df. We could find and see that there are lots of missing values in the dataset therefore we need to carefully handle all these values. We first do some data cleaning. We could find that we have location column which is a pair of the latitude and longitude. Thus, we could simply drop the latitude and longitude to release some memories for our ram since this dataset is really big. Besides, we also choose the data from October to the most recent date to do the analysis since we only care about the general trend of collision with borough area and our ram is limited. 
+Our dataset is first derived from the API using the Python Pandas and save it into a csv file. Then we use the read.csv file to reload it into the data frame df. We could find and see that there are lots of missing values in the dataset therefore we need to carefully handle all these values. We first do some data cleaning. We could find that we have location column which is a pair of the latitude and longitude. Thus, we could simply drop the latitude and longitude to release some memories for our ram since this dataset is really big. Besides, we also choose the data from October to the most recent date to do the analysis since we only care about the general trend of collision with borough area and our ram is limited.
 ```{r}
 df = subset(df, select = -c(latitude, longitude) )
 #df
@@ -37,7 +37,7 @@ for (row in 1:nrow(df)) {
       df[row, "contributing_factor_vehicle_2"] <- 0
     }
     if (is.na(df[row, "contributing_factor_vehicle_3"]) == TRUE) {
-    
+
       df[row, "contributing_factor_vehicle_3"] <- 0
     }
     if (is.na(df[row, "contributing_factor_vehicle_4"]) == TRUE) {
