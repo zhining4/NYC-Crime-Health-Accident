@@ -48,7 +48,7 @@ df1 <- df %>% filter(!is.na(borough))
 
 ggplot(df1, aes(y = reorder(borough, real_crash_date, median),x = real_crash_date)) + 
   geom_density_ridges(color = "blue", fill = "lightblue", alpha = 0.8, scale = 1.1) + 
-  theme_grey(16) + ylab("borough")
+  theme_grey(16) + ylab("borough") + ggtitle("Ridge graph for all borough", )+ theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"))
 ```
 
 In the ridge graph, only staten island has some occasionally date contains more accidents than average. All five borough frequency of collision is still in a mild and general trend which means the average case per location is consistent through all dates. 
@@ -64,7 +64,7 @@ tmp2 <- tail(tmp1[order(tmp1$count),],5)
 tmp2$borough <- "BROOKLYN"
 tmp2$zip_code <- as.character(tmp2$zip_code)
 p1 <- ggplot(tmp2, aes( x = reorder(zip_code, count), y = count))+geom_bar( stat="identity",color = "blue", fill = "lightblue", binwidth = 1) + facet_wrap(~borough)+coord_flip()+xlab("zip_code")+ scale_y_continuous(limits = c(0,0.05))+
-  theme(axis.title.x=element_blank(),axis.title.y=element_blank())
+  theme(axis.title.x=element_blank(),axis.title.y=element_blank()) + ggtitle("Top 5 region with highest collision rate in each borough", )+ theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
 
 tmp3 <- df %>% filter(borough == "QUEENS") %>% group_by(zip_code) %>% summarise(count = n()/total1)
 tmp4 <- tail(tmp3[order(tmp3$count),],5)
@@ -117,11 +117,12 @@ p
 
 
 ```
+
 We could then check through within each borough, corresponding to the total amount of occurence, which region represents by the zip_code would be representative data. We divided the count by the total occurences and generate the top 5 region that has the most percentage occurence within each borough. By comparison, brooklyn has the highest collision rate region compare to other zip code region within brooklyn. That means when people stay in brooklyn, people can try to avoid go to those region as comparatively other region within brooklyn are safer. We could see most borough does not have a significant region while brooklyn and manhattan both have one that has most occurences further from others. In brooklyn, the region with zip code 11207 and in manhattan, the region with zip code 10002 are representative region within each borough. We could also conclude that people could take more precaution when going to those place as they have motor accidents much more often than others. 
 
 
 ## Will the borough caused the contributing vehicle factors behaved differently?
-```{r }
+```{r}
 library(RColorBrewer)
 library(vcd)
 # creating a new df which will add a new row if it has more than one contributing factor
@@ -169,7 +170,7 @@ Before doing the analysis of the potential patterns hidden between the different
 
 total30 <- as.data.frame(tail(sort(table(df_1$contributing_factor_vehicle_1)),30))
 total30 <- transform(total30, Var1 = as.character(Var1))
-ggplot(total30, aes(x=Freq, y=reorder(Var1, Freq))) + geom_point(size=5,color = "blue") + ggtitle("The dot plot for the top30 contributing vehicle factors in New York City") + ylab("factors") + xlab("count") + theme_linedraw() + theme(plot.title = element_text(size = 20, face = "bold"))
+ggplot(total30, aes(x=Freq, y=reorder(Var1, Freq))) + geom_point(size=5,color = "blue") + ggtitle("The dot plot for the top30 contributing vehicle factors in New York City") + ylab("factors") + xlab("count") + theme_linedraw() + theme(plot.title = element_text(size = 10, face = "bold"))
 ```
 
 From the plot, the dot plot for the top30 contributing vehicle factors in New York City, we could clearly say that the unspecified contributing factors exceeds other contributing factors far away. We think that this phenomenon is attributed to the reason that it is impossible for the police to witness the collision by themselves and usually people will argue about the responsibilities of the collision. Thus it is hard to police to clearly state the contributing factors clearly and they will simply use unspecified to be the contributing factors. And we could also know that the distraction, failure to the right-way, and following too closely are the three other dominant factors to contribute the collision other than the unspecified which is not surprised since people usually will make mistakes on these aspects. But one interesting pattern is that only a small fraction of collision are caused by the alcohol investment but alcohol culture has been deeply rooted in U.S. 
@@ -234,7 +235,7 @@ colnames(mostCombined3) <- x
 mostCombined3$count <- as.integer(mostCombined3$count)
 
 
-ggplot(mostCombined3, aes(x=count, y=reorder(contributing_factor, count), color=borough)) + geom_point(size=5) + ggtitle("The dot plot for the top30 contributing vehicle factors in New York City include borough separation") + ylab("factors") + theme_linedraw()+ theme(plot.title = element_text(size = 20, face = "bold"))
+ggplot(mostCombined3, aes(x=count, y=reorder(contributing_factor, count), color=borough)) + geom_point(size=5) + ggtitle("The dot plot for the top30 contributing vehicle factors in New York City include borough separation") + ylab("factors") + theme_linedraw()+ theme(plot.title = element_text(size = 10, face = "bold"))
 ```
 
 We create a new graph above to see how contributing factors behave in different borough and how they behave differently compared with the graph representing the whole New York City. We could clearly see that these contribution factors behave similar with the graph representing the collision cases in the whole New York City since the order of these contributing factors are the same and dots follows the similar trends from the overall aspect.In general, each borough factors are in the order of the occurence of accidents in ther increasing order where Staten Island has least frequency. Besides, we could also see that the dots representing the borough will basically clustered together in the same row except Unspecified and Driving distraction which further proves that the borough might not exist a relationship between the borough and the contributing factors. As for the unspecified, these five borough are separte but as for driving distraction, Queen, Mahattan, and Brooklynforms a group and Bronx and Staten Island forms another group. We know that the streets are closed and narrow sometimes in Queen, Mahattan, and Brooklyn which might caused the driving distraction. But from the overall aspect, we do not think there is a clear relationship between borough and the contributing factors.
